@@ -1,0 +1,17 @@
+# 生成产物
+bin/
+obj/
+*.user
+*.suo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude Code 本机配置（权限白名单，机器相关）
+.claude/settings.local.json
+
+# 程序运行时写在 exe 旁边的文件：settings.json 里存的是明文 Token，绝不能提交
+settings.json
+logs/

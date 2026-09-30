@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CheckGithub.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="400"
+        x:Class="CheckGithub.Views.SettingsWindow"
+        x:DataType="vm:SettingsWindowViewModel"
+        Title="设置"
+        Width="580" Height="420"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="16" Spacing="8">
+        <TextBlock Text="GitHub Personal Access Token" FontWeight="SemiBold" />
+
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBox Grid.Column="0" Text="{Binding TokenInput}" PasswordChar="●" IsVisible="{Binding !ShowToken}" />
+            <TextBox Grid.Column="0" Text="{Binding TokenInput}" IsVisible="{Binding ShowToken}" />
+            <CheckBox Grid.Column="1" Content="显示" IsChecked="{Binding ShowToken}" Margin="8,0,0,0" />
+        </Grid>
+
+        <TextBlock Text="{Binding TokenHint}" Foreground="#666666" FontSize="12" TextWrapping="Wrap" />
+
+        <Border Background="#FFF4F4" BorderBrush="#E0B4B4" BorderThickness="1" CornerRadius="4" Padding="8">
+            <TextBlock TextWrapping="Wrap"
+                       FontSize="12"
+                       Foreground="#A01020"
+                       Text="Token 以明文保存在程序目录的 settings.json 中，任何能读取该文件的程序或用户都能拿到它。建议使用 fine-grained Token、只勾选只读权限、并设置较短的有效期。" />
+        </Border>
+
+        <TextBlock Text="同时克隆的仓库数量" FontWeight="SemiBold" Margin="0,6,0,0" />
+        <ComboBox ItemsSource="{Binding ParallelismOptions}"
+                  SelectedItem="{Binding Parallelism}"
+                  Width="120"
+                  HorizontalAlignment="Left" />
+
+        <TextBlock Text="{Binding ConfigPathHint}" Foreground="#666666" FontSize="12" TextWrapping="Wrap" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,10,0,0">
+            <Button Content="保存" Click="OnSaveClick" />
+            <Button Content="取消" Click="OnCancelClick" />
+        </StackPanel>
+    </StackPanel>
+</Window>

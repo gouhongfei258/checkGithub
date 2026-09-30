@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:CheckGithub.ViewModels"
+             xmlns:views="using:CheckGithub.Views"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="400"
+             x:Class="CheckGithub.Views.RepoTableView"
+             x:DataType="vm:RepoRowViewModel">
+
+    <DataGrid ItemsSource="{Binding $parent[views:RepoTableView].Source}"
+              AutoGenerateColumns="False"
+              CanUserSortColumns="True"
+              CanUserResizeColumns="True"
+              GridLinesVisibility="Horizontal"
+              IsReadOnly="True"
+              SelectionMode="Single">
+        <DataGrid.Columns>
+            <DataGridTemplateColumn Width="36" CanUserSort="False" CanUserResize="False">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate x:DataType="vm:RepoRowViewModel">
+                        <CheckBox IsChecked="{Binding IsSelected}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="名称" Width="3*" SortMemberPath="Name">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate x:DataType="vm:RepoRowViewModel">
+                        <StackPanel Margin="0,2">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="{Binding Owner}" Foreground="#888888" />
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                <Border IsVisible="{Binding IsFork}"
+                                        Background="#FFF0C2"
+                                        CornerRadius="3"
+                                        Padding="4,0">
+                                    <TextBlock Text="Fork" FontSize="11" />
+                                </Border>
+                                <Border IsVisible="{Binding IsPrivateRepo}"
+                                        Background="#E8E8E8"
+                                        CornerRadius="3"
+                                        Padding="4,0">
+                                    <TextBlock Text="私有" FontSize="11" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="{Binding Description}"
+                                       Foreground="#777777"
+                                       FontSize="11"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTextColumn Header="语言" Width="110" Binding="{Binding Language}" />
+
+            <DataGridTextColumn Header="Stars" Width="90" SortMemberPath="Stars" Binding="{Binding StarsText}" />
+
+            <DataGridTextColumn Header="更新时间" Width="140" SortMemberPath="UpdatedAt" Binding="{Binding UpdatedText}" />
+
+            <DataGridTemplateColumn Header="本地状态" Width="200" CanUserSort="False">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate x:DataType="vm:RepoRowViewModel">
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+                            <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding StatusText}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                                <ProgressBar Value="{Binding Progress}"
+                                             Maximum="100"
+                                             Height="6"
+                                             IsVisible="{Binding IsBusy}" />
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Content="输出"
+                                    IsVisible="{Binding HasRawLog}"
+                                    Padding="6,0"
+                                    FontSize="11"
+                                    VerticalAlignment="Center">
+                                <Button.Flyout>
+                                    <Flyout Placement="Left">
+                                        <ScrollViewer MaxWidth="720" MaxHeight="420">
+                                            <SelectableTextBlock Text="{Binding RawLog}"
+                                                                 FontFamily="Consolas"
+                                                                 FontSize="11"
+                                                                 TextWrapping="Wrap" />
+                                        </ScrollViewer>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="操作" Width="170" CanUserSort="False">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate x:DataType="vm:RepoRowViewModel">
+                        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                            <Button Content="文件夹"
+                                    Command="{Binding OpenFolderCommand}"
+                                    IsEnabled="{Binding HasLocalPath}"
+                                    Padding="6,0"
+                                    FontSize="11" />
+                            <Button Content="浏览器"
+                                    Command="{Binding OpenInBrowserCommand}"
+                                    Padding="6,0"
+                                    FontSize="11" />
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

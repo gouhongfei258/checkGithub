@@ -1,0 +1,99 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CheckGithub.ViewModels"
+        xmlns:views="using:CheckGithub.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="CheckGithub.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="CheckGithub"
+        Width="1200" Height="800"
+        WindowStartupLocation="CenterScreen">
+
+    <DockPanel Margin="10">
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,8">
+            <TextBlock Grid.Column="0" Text="GitHub 用户名" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding UserName}"
+                     PlaceholderText="例如 torvalds，回车即可获取"
+                     Margin="8,0,0,0"
+                     KeyDown="OnUserNameKeyDown" />
+            <Button Grid.Column="2" Content="获取" Command="{Binding FetchCommand}" Margin="8,0,0,0" />
+            <Button Grid.Column="3" Content="刷新" Command="{Binding RefreshCommand}" Margin="8,0,0,0" />
+            <Button Grid.Column="4" Content="设置" Click="OnSettingsClick" Margin="8,0,0,0" />
+        </Grid>
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+            <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding RateLimitText}" Foreground="#777777" VerticalAlignment="Center" Margin="8,0,0,0" />
+        </Grid>
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,0,0,8">
+            <TextBlock Grid.Column="0" Text="过滤" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1"
+                     Text="{Binding FilterText}"
+                     PlaceholderText="按名称 / 描述 / 语言过滤"
+                     Margin="8,0,0,0" />
+            <CheckBox Grid.Column="2" Content="隐藏 Fork" IsChecked="{Binding HideForks}" Margin="8,0,0,0" />
+            <Button Grid.Column="3" Content="全选（当前筛选）" Command="{Binding SelectAllCommand}" Margin="8,0,0,0" />
+            <Button Grid.Column="4" Content="反选（当前筛选）" Command="{Binding InvertSelectionCommand}" Margin="8,0,0,0" />
+        </Grid>
+
+        <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,8,0,0">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto,Auto">
+                <TextBlock Grid.Column="0" Text="目标目录" VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Text="{Binding TargetDirectory}" PlaceholderText="选择或粘贴目标目录" Margin="8,0,0,0" />
+                <Button Grid.Column="2" Content="浏览…" Click="OnBrowseTargetClick" Margin="8,0,0,0" />
+                <CheckBox Grid.Column="3" Content="浅克隆 (--depth 1)" IsChecked="{Binding ShallowClone}" Margin="8,0,0,0" />
+                <Button Grid.Column="4" Content="开始克隆" Command="{Binding StartCloneCommand}" />
+                <Button Grid.Column="5" Content="停止" Command="{Binding StopCommand}" Margin="8,0,0,0" />
+                <Button Grid.Column="6" Content="重试失败项" Command="{Binding RetryFailedCommand}" Margin="8,0,0,0" />
+                <Button Grid.Column="7" Content="打开日志文件夹" Command="{Binding OpenLogFolderCommand}" Margin="8,0,0,0" />
+            </Grid>
+
+            <Border BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="4" Height="170">
+                <ScrollViewer x:Name="LogScroll" Padding="6">
+                    <ItemsControl ItemsSource="{Binding LogRows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LogRowViewModel">
+                                <StackPanel>
+                                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                                        <TextBlock Grid.Column="0" Text="{Binding TimeText}" Foreground="#999999" FontFamily="Consolas" FontSize="12" Margin="0,0,6,0" />
+                                        <TextBlock Grid.Column="1" Text="{Binding LevelText}" FontWeight="SemiBold" FontSize="12" Margin="0,0,6,0" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Message}" TextWrapping="Wrap" FontSize="12" />
+                                        <Button Grid.Column="3"
+                                                Content="详情"
+                                                Command="{Binding ToggleCommand}"
+                                                IsVisible="{Binding HasDetail}"
+                                                Padding="6,0"
+                                                FontSize="11" />
+                                    </Grid>
+                                    <TextBlock Text="{Binding Detail}"
+                                               IsVisible="{Binding IsExpanded}"
+                                               TextWrapping="Wrap"
+                                               FontFamily="Consolas"
+                                               FontSize="11"
+                                               Foreground="#666666"
+                                               Margin="16,2,0,2" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </StackPanel>
+
+        <TabControl SelectedIndex="{Binding ActiveTabIndex, Mode=TwoWay}">
+            <TabItem Header="Repositories">
+                <views:RepoTableView Source="{Binding ReposView}" />
+            </TabItem>
+            <TabItem Header="Starred">
+                <views:RepoTableView Source="{Binding StarredView}" />
+            </TabItem>
+        </TabControl>
+
+    </DockPanel>
+</Window>
